@@ -14,10 +14,28 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URL;
 import java.util.List;
+import java.util.List;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import com.waracle.cakemgr.CakeEntity;
+import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.core.Application;
 
-@WebServlet("/cakes")
+//@WebServlet("/cakes")
+@Path("/api")
 public class CakeServlet extends HttpServlet {
-
+	
     @Override
     public void init() throws ServletException {
         super.init();
@@ -81,6 +99,45 @@ public class CakeServlet extends HttpServlet {
         System.out.println("init finished");
     }
 
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<CakeEntity> getAll() {
+    	List<CakeEntity> result = null;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+            System.out.println("Getting all cakes");
+            result = session.createQuery("from CakeEntity").list();
+        } catch (ConstraintViolationException ex) {
+
+        }
+        session.close();
+        return result;
+    }
+    
+    @GET
+    @Path("cakes/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<CakeEntity> getAllCakes() {
+    	List<CakeEntity> result = null;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+            System.out.println("Getting all cakes");
+            result = session.createQuery("from CakeEntity").list();
+        } catch (ConstraintViolationException ex) {
+
+        }
+        session.close();
+        return result;
+    }
+    
+    @GET
+    @Path("cakes/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public CakeEntity getById(@PathParam("id") Long id) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        return session.get(CakeEntity.class, id);
+    }
+    
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
